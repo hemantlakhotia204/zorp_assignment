@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,8 +15,8 @@ class Map extends StatefulWidget {
 class _MapState extends State<Map> {
   List<Task> data;
   LatLng target;
-  Location location = new Location();
-
+  Location _location = new Location();
+  GoogleMapController _controller;
   bool _serviceEnabled;
   PermissionStatus _permissionGranted;
 
@@ -25,51 +26,31 @@ class _MapState extends State<Map> {
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    //Data received from Loading Screen.
-    data = ModalRoute.of(context).settings.arguments;
-    target = LatLng(data[0].coordinate.latitude, data[0].coordinate.longitude);
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.redAccent,
-        title: Text(
-          'Zorp Assignment',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-      body: Center(
-          child: GoogleMap(
-        onMapCreated: _onMapCreated,
-        mapType: MapType.normal,
-        myLocationEnabled: true,
-        initialCameraPosition: CameraPosition(
-          target: target,
-          zoom: 16,
-        ),
-        markers: _createMarker(),
-      )),
-    );
-  }
-
-  void _onMapCreated(
-      GoogleMapController controller) {} // customize map type, animation, etc.
+  void _onMapCreated(GoogleMapController controller) {
+    _controller = controller;
+    // if(data == null) {
+    //   _location.onLocationChanged().listen((l) {
+    //     _controller.animateCamera(
+    //       CameraUpdate.newCameraPosition(
+    //         CameraPosition(target: LatLng(l.latitude, l.longitude), zoom: 15),
+    //       ),
+    //     );
+    //   });
+    // }
+  } // customize map type, animation, etc.
 
   void _checkLocationPermission() async {
-    _permissionGranted = await location.hasPermission();
+    _permissionGranted = await _location.hasPermission();
     if (_permissionGranted == PermissionStatus.DENIED) {
-      _permissionGranted = await location.requestPermission();
+      _permissionGranted = await _location.requestPermission();
       if (_permissionGranted != PermissionStatus.GRANTED) {
         return;
       }
     }
 
-    _serviceEnabled = await location.serviceEnabled();
+    _serviceEnabled = await _location.serviceEnabled();
     if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
+      _serviceEnabled = await _location.requestService();
       if (!_serviceEnabled) {
         SystemNavigator.pop();
         return;
@@ -77,7 +58,6 @@ class _MapState extends State<Map> {
     }
   } //check Location Permission and location enable
 
-  //create marker for each task
   Set<Marker> _createMarker() {
     Set<Marker> markers = Set<Marker>();
 
@@ -90,11 +70,9 @@ class _MapState extends State<Map> {
           infoWindow: InfoWindow(title: data[i].seq.toString())));
     }
     return markers;
-  }
+  } //create marker for each task
 
-  // function to trigger upon tapping on a marker
   void _handleTap(int i, markers) {
-
     //show details of the marker tapped
     Future<void> future = showModalBottomSheet<void>(
         barrierColor: Colors.transparent,
@@ -199,8 +177,40 @@ class _MapState extends State<Map> {
             )));
 
     future.then((value) => _closeModal(value));
-  }
+  } // function to trigger upon tapping on a marker
 
-  //function to close bottom sheet
-  void _closeModal(void value) {}
+  void _closeModal(void value) {} //function to close bottom sheet
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    //Data received from Loading Screen.
+    data = ModalRoute.of(context).settings.arguments;
+    target =
+        LatLng(data[0].coordinate.latitude, data[0].coordinate.longitude);
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.redAccent,
+        title: Text(
+          'Zorp Assignment',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+      body: Center(
+          child: GoogleMap(
+        onMapCreated: _onMapCreated,
+        mapType: MapType.normal,
+        myLocationEnabled: true,
+        initialCameraPosition: CameraPosition(
+          target: target,
+          zoom: 16,
+        ),
+        markers: _createMarker(),
+      )),
+    );
+  }
 }

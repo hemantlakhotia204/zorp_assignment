@@ -1,3 +1,4 @@
+
 import 'package:http/http.dart' as http;
 import 'package:zorp_assignment/objects/task.dart';
 import 'package:zorp_assignment/services/apiHelper.dart';
@@ -13,18 +14,6 @@ class MockTaskHelper extends Mock implements TaskHelper {}
 
 void main() {
   //arrange
-  http.Client mockClient = MockClient();
-  APIHelper mockAPIHelper = MockApiCall();
-  TaskHelper mockTaskHelper = MockTaskHelper();
-
-  test('When a broken Api is called Then APIHelper returns null', () async {
-    //assert
-    when(mockClient.get(Uri.parse(
-        'http://ec2-13-126-90-75.ap-south-0.compute.amazonaws.com:8082/user/1/tasks/'))).thenAnswer((realInvocation) async => http.Response('Not Found', 404));
-    //compare
-    expect(await mockAPIHelper.fetchTaskJson(), null);
-  });
-
   test('When sorting of tasks according to seq', () async {
     final taskHelper = TaskHelper();
     List<Task> tasks = [
@@ -45,10 +34,60 @@ void main() {
     expect(taskHelper.sortTasks(tasks), expectedTasks);
   });
 
-  test('When taskHelper gets and empty array of JSON(No task left of delivery boy) then ', () async{
-    final taskHelper = TaskHelper();
-    List data = [];
+  group('getTask', ()  {
+    test(
+      'sorting array',
+   () async {
+  final taskHelper = TaskHelper();
 
-    expect(taskHelper.getTasks(data), null);
+  List data = [
+  {
+  "taskId": "1",
+  "seq": 3,
+  "location": {
+  "lat": 28.7041,
+  "lon": 77.1025
+  },
+  "name": "delivery task 3",
+  "customerInfo": "Mohan, N-69, Connaught Place, New Delhi"
+  },
+  {
+  "taskId": "2",
+  "seq": 1,
+  "location": {
+  "lat": 28.7045,
+  "lon": 77.103
+  },
+  "name": "delivery task 1",
+  "customerInfo": "Raj, 64, Janpath, New Delhi"
+  },
+  {
+  "taskId": "3",
+  "seq": 2,
+  "location": {
+  "lat": 28.7031,
+  "lon": 77.1028
+  },
+  "name": "delivery task 2",
+  "customerInfo": "Bhagat, F-41, First Floor, Connaught Place, New Delhi"
+  },
+  ];
+
+  List<Task> tasks = [
+  Task('2', 1, Coordinate(28.7045, 77.103), "delivery task 1", "Raj, 64, Janpath, New Delhi"),
+  Task('3', 2, Coordinate(28.7031, 77.1028 ), "delivery task 2", "Bhagat, F-41, First Floor, Connaught Place, New Delhi"),
+  Task('1', 3, Coordinate(28.7041, 77.1025), "delivery task 3", "Mohan, N-69, Connaught Place, New Delhi")
+  ];
+
+  expect(await taskHelper.getTasks(data), tasks);
+  });
+
+
+    test('When taskHelper gets and empty array of JSON(No task left of delivery boy)', () async {
+     final taskHelper = TaskHelper();
+     List data = [];
+     expect(await taskHelper.getTasks(data), null);
+    });
+
   });
 }

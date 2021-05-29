@@ -1,23 +1,20 @@
 
 import 'package:zorp_assignment/objects/task.dart';
-import 'package:zorp_assignment/services/apiHelper.dart';
 
 class TaskHelper {
   TaskHelper();//constructor
 
 
 
-  // fetch data from apiHelper, convert to 'List<Task>' object and sort.
+  // fetch data from apiHelper, convert to 'List<Task>' object and sort by seq.
   Future<List<Task>> getTasks(List data) async {
     // Handle exception
     try{
       List<Task> tasks = convertData(data);
       tasks = sortTasks(tasks);
       if (data.length == 0) {
-        print('hr');
         return null;
       } else {
-        print('te');
         return tasks;
       }
 

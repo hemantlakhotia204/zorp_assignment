@@ -1,8 +1,9 @@
 //Task Object
 import 'package:equatable/equatable.dart';
 
+
+// ignore: must_be_immutable
 class Task extends Equatable{
-  //Declaring fields of the Object Task
   String taskId;
   int seq;
   Coordinate coordinate;

@@ -36,6 +36,7 @@ dependencies:
   mockito: ^5.0.9
   location: ^2.5.0
   equatable: ^2.0.2
+  fluttertoast: ^7.1.1
 
 dev_dependencies:
   flutter_test:
