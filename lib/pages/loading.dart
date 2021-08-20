@@ -20,9 +20,21 @@ class _LoadingState extends State<Loading> {
   // Trigger Api calling during runtime
   void getTasks() async {
     try {
-      TaskHelper instance = TaskHelper(); // Instance of Tasks class
-      data = await instance.getTasks(await APIHelper().fetchTaskJson()); // waiting for data
+      // TaskHelper instance = TaskHelper(); // Instance of Tasks class
+      // data = await instance.getTasks(await APIHelper().fetchTaskJson()); // waiting for data
       // print(data);
+      data = [
+        Task(
+          "1",
+          2,
+          Coordinate(
+              37.4242,
+              -122.1221
+          ),
+          'Hemant',
+          'W.B.'
+        )
+      ];
       Timer(Duration(seconds: 3), () => {
         Navigator.pushReplacementNamed(context, '/map', arguments: data) // Passing data and moving to Map Screen with a timer.
       });

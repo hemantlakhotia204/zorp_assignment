@@ -37,6 +37,7 @@ dependencies:
   location: ^2.5.0
   equatable: ^2.0.2
   fluttertoast: ^7.1.1
+  sizer: ^2.0.13
 
 dev_dependencies:
   flutter_test:
